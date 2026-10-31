@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>タスク管理ボード</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #2563eb;
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .form {
+      display: flex;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .form input {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+      min-width: 0;
+    }
+
+    .form button {
+      padding: 8px 16px;
+      background: #1d4ed8;
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+
+    .form button:hover {
+      background: #1e40af;
+    }
+
+    main {
+      display: flex;
+      gap: 16px;
+      padding: 24px;
+      align-items: flex-start;
+    }
+
+    .column {
+      flex: 1;
+      background: #e2e8f0;
+      border-radius: 10px;
+      padding: 12px;
+      min-height: 400px;
+      transition: background 0.15s;
+    }
+
+    .column.drag-over {
+      background: #bfdbfe;
+    }
+
+    .column-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      padding: 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .column-title .count {
+      background: #94a3b8;
+      color: white;
+      border-radius: 999px;
+      font-size: 11px;
+      padding: 1px 7px;
+      font-weight: 600;
+    }
+
+    .card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 8px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: grab;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: box-shadow 0.15s, opacity 0.15s;
+      user-select: none;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+    }
+
+    .card.dragging {
+      opacity: 0.4;
+      cursor: grabbing;
+    }
+
+    .card-title {
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 2px 4px;
+      line-height: 1;
+      border-radius: 4px;
+      margin-left: 8px;
+      flex-shrink: 0;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .delete-btn:hover {
+      color: #ef4444;
+      background: #fee2e2;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>タスクボード</h1>
+  <form class="form" id="task-form">
+    <input type="text" id="task-input" placeholder="タスク名を入力..." autocomplete="off" />
+    <button type="submit">追加</button>
+  </form>
+</header>
+
+<main>
+  <div class="column" data-status="todo">
+    <div class="column-title">やること <span class="count">0</span></div>
+    <div class="card-list"></div>
+  </div>
+  <div class="column" data-status="doing">
+    <div class="column-title">やってる最中 <span class="count">0</span></div>
+    <div class="card-list"></div>
+  </div>
+  <div class="column" data-status="done">
+    <div class="column-title">完了 <span class="count">0</span></div>
+    <div class="card-list"></div>
+  </div>
+</main>
+
+<script>
+  const STORAGE_KEY = 'tasks';
+
+  function loadTasks() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveTasks(tasks) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  }
+
+  function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2);
+  }
+
+  function createCard(task) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.draggable = true;
+    card.dataset.id = task.id;
+
+    const title = document.createElement('span');
+    title.className = 'card-title';
+    title.textContent = task.title;
+
+    const btn = document.createElement('button');
+    btn.className = 'delete-btn';
+    btn.textContent = '×';
+    btn.title = '削除';
+    btn.addEventListener('click', () => deleteTask(task.id));
+
+    card.appendChild(title);
+    card.appendChild(btn);
+
+    card.addEventListener('dragstart', onDragStart);
+    card.addEventListener('dragend', onDragEnd);
+
+    return card;
+  }
+
+  function renderAll() {
+    const tasks = loadTasks();
+    const columns = document.querySelectorAll('.column');
+
+    columns.forEach(col => {
+      col.querySelector('.card-list').innerHTML = '';
+    });
+
+    tasks.forEach(task => {
+      const col = document.querySelector(`.column[data-status="${task.status}"]`);
+      if (col) {
+        col.querySelector('.card-list').appendChild(createCard(task));
+      }
+    });
+
+    updateCounts();
+  }
+
+  function updateCounts() {
+    document.querySelectorAll('.column').forEach(col => {
+      const count = col.querySelectorAll('.card').length;
+      col.querySelector('.count').textContent = count;
+    });
+  }
+
+  // タスク追加
+  document.getElementById('task-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const input = document.getElementById('task-input');
+    const title = input.value.trim();
+    if (!title) return;
+
+    const tasks = loadTasks();
+    tasks.push({
+      id: generateId(),
+      title,
+      status: 'todo',
+      createdAt: new Date().toISOString(),
+    });
+    saveTasks(tasks);
+    input.value = '';
+    renderAll();
+  });
+
+  // タスク削除
+  function deleteTask(id) {
+    const tasks = loadTasks().filter(t => t.id !== id);
+    saveTasks(tasks);
+    renderAll();
+  }
+
+  // ドラッグ＆ドロップ
+  let draggingId = null;
+
+  function onDragStart(e) {
+    draggingId = e.currentTarget.dataset.id;
+    e.currentTarget.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  }
+
+  function onDragEnd(e) {
+    e.currentTarget.classList.remove('dragging');
+    document.querySelectorAll('.column').forEach(c => c.classList.remove('drag-over'));
+  }
+
+  document.querySelectorAll('.column').forEach(col => {
+    col.addEventListener('dragover', e => {
+      e.preventDefault();
+      col.classList.add('drag-over');
+    });
+
+    col.addEventListener('dragleave', e => {
+      if (!col.contains(e.relatedTarget)) {
+        col.classList.remove('drag-over');
+      }
+    });
+
+    col.addEventListener('drop', e => {
+      e.preventDefault();
+      col.classList.remove('drag-over');
+      const newStatus = col.dataset.status;
+
+      const tasks = loadTasks();
+      const task = tasks.find(t => t.id === draggingId);
+      if (task && task.status !== newStatus) {
+        task.status = newStatus;
+        saveTasks(tasks);
+        renderAll();
+      }
+    });
+  });
+
+  renderAll();
+</script>
+
+</body>
+</html>
