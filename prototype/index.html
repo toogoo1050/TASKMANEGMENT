@@ -138,6 +138,14 @@
       cursor: grabbing;
     }
 
+    .card.insert-above {
+      border-top: 2px solid #2563eb;
+    }
+
+    .card.insert-below {
+      border-bottom: 2px solid #2563eb;
+    }
+
     .card-title {
       flex: 1;
       word-break: break-word;
@@ -229,6 +237,23 @@
     card.addEventListener('dragstart', onDragStart);
     card.addEventListener('dragend', onDragEnd);
 
+    card.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      const rect = card.getBoundingClientRect();
+      clearDropIndicators();
+      if (e.clientY < rect.top + rect.height / 2) {
+        card.classList.add('insert-above');
+        dropTargetId = task.id;
+        dropPosition = 'before';
+      } else {
+        card.classList.add('insert-below');
+        dropTargetId = task.id;
+        dropPosition = 'after';
+      }
+      card.closest('.column').classList.add('drag-over');
+    });
+
     return card;
   }
 
@@ -285,6 +310,14 @@
 
   // ドラッグ＆ドロップ
   let draggingId = null;
+  let dropTargetId = null;
+  let dropPosition = null; // 'before' | 'after'
+
+  function clearDropIndicators() {
+    document.querySelectorAll('.card').forEach(c => {
+      c.classList.remove('insert-above', 'insert-below');
+    });
+  }
 
   function onDragStart(e) {
     draggingId = e.currentTarget.dataset.id;
@@ -295,12 +328,21 @@
   function onDragEnd(e) {
     e.currentTarget.classList.remove('dragging');
     document.querySelectorAll('.column').forEach(c => c.classList.remove('drag-over'));
+    clearDropIndicators();
+    dropTargetId = null;
+    dropPosition = null;
   }
 
   document.querySelectorAll('.column').forEach(col => {
     col.addEventListener('dragover', e => {
       e.preventDefault();
       col.classList.add('drag-over');
+      // カードの上ではなく列の空きエリアにいる場合はインジケーターをリセット
+      if (!e.target.closest('.card')) {
+        clearDropIndicators();
+        dropTargetId = null;
+        dropPosition = null;
+      }
     });
 
     col.addEventListener('dragleave', e => {
@@ -312,15 +354,32 @@
     col.addEventListener('drop', e => {
       e.preventDefault();
       col.classList.remove('drag-over');
+      clearDropIndicators();
       const newStatus = col.dataset.status;
 
       const tasks = loadTasks();
-      const task = tasks.find(t => t.id === draggingId);
-      if (task && task.status !== newStatus) {
-        task.status = newStatus;
-        saveTasks(tasks);
-        renderAll();
+      const draggedIndex = tasks.findIndex(t => t.id === draggingId);
+      if (draggedIndex === -1) return;
+
+      const [draggedTask] = tasks.splice(draggedIndex, 1);
+      draggedTask.status = newStatus;
+
+      if (dropTargetId && dropTargetId !== draggingId) {
+        const targetIndex = tasks.findIndex(t => t.id === dropTargetId);
+        if (targetIndex !== -1) {
+          const insertAt = dropPosition === 'before' ? targetIndex : targetIndex + 1;
+          tasks.splice(insertAt, 0, draggedTask);
+        } else {
+          tasks.push(draggedTask);
+        }
+      } else {
+        tasks.push(draggedTask);
       }
+
+      saveTasks(tasks);
+      renderAll();
+      dropTargetId = null;
+      dropPosition = null;
     });
   });
 
