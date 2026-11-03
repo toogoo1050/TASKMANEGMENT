@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:taskmanagement
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true   # http://localhost:8080/h2-console でDB内容を確認できる
+  jpa:
+    hibernate:
+      ddl-auto: create-drop   # 起動時にテーブル作成、停止時に削除
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # --- PostgreSQL（Docker起動後に切り替える） ---
+  # datasource:
+  #   url: jdbc:postgresql://localhost:5432/taskmanagement
+  #   driver-class-name: org.postgresql.Driver
+  #   username: postgres
+  #   password: postgres
+  # jpa:
+  #   properties:
+  #     hibernate:
+  #       dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8080
