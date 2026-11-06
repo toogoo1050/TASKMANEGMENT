@@ -54,15 +54,19 @@ Mac の Launchpad から **Docker** を開く。
 
 ### 2. PostgreSQL を起動
 
+Cursor でこのプロジェクト（taskmanegment）を開いた状態でターミナルを新規で開くと、自動でプロジェクトのフォルダにいる。あとは `cd backend` だけで OK。
+
 ```bash
-cd ~/Desktop/hennshuu/Raisetech/taskmanegment/backend
+cd backend
 docker compose up -d
 ```
+
+今どこにいるか確認したいときは `pwd` を打つ。
 
 ### 3. Spring Boot（バックエンド）を起動
 
 ```bash
-cd ~/Desktop/hennshuu/Raisetech/taskmanegment/backend
+cd backend
 ./mvnw spring-boot:run
 ```
 
