@@ -28,7 +28,11 @@
       "Bash(git checkout:*)",
       "Bash(git switch:*)",
       "Bash(git stash:*)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(gh issue:*)",
+      "Bash(gh pr:*)",
+      "Bash(gh repo:*)",
+      "Bash(gh api:*)"
     ],
     "deny": [
       "Bash(rm:*)",
