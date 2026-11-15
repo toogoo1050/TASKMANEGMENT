@@ -1,16 +1,31 @@
-# React + Vite
+# フロントエンド
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+タスク管理アプリのフロントエンドです。React + TypeScript + Viteで構築しています。
 
-Currently, two official plugins are available:
+## 技術スタック
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| 技術 | バージョン | 役割 |
+|------|-----------|------|
+| React | 19.3.1 | UIフレームワーク |
+| TypeScript | 7.0.2 | 型安全な開発 |
+| Vite | 8.3.6 | 開発サーバー・ビルドツール |
+| dnd-kit | 6.3.1 | ドラッグ&ドロップ |
+| Axios | 1.21.1 | バックエンドAPIとの通信 |
 
-## React Compiler
+## 起動方法
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+pnpm install
+pnpm dev
+```
 
-## Expanding the Oxlint configuration
+ブラウザで http://localhost:5173 を開く。
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## コマンド一覧
+
+| コマンド | 内容 |
+|---------|------|
+| `pnpm dev` | 開発サーバー起動 |
+| `pnpm build` | 本番用ファイルをビルド |
+| `pnpm preview` | ビルド結果の確認 |
+| `pnpm lint` | コードのlintチェック |
