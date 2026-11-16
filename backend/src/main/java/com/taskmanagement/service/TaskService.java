@@ -19,10 +19,12 @@ public class TaskService {
         return taskRepository.findAllByOrderByDisplayOrderAscCreatedAtAsc();
     }
 
+
     @Transactional
     public Task create(Task task) {
         return taskRepository.save(task);
     }
+
 
     @Transactional
     public Task update(String id, Task updated) {

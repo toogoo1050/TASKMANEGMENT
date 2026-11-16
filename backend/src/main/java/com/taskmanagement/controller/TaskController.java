@@ -21,12 +21,13 @@ public class TaskController {
     public List<Task> getAll() {
         return taskService.findAll();
     }
+@PostMapping
+@ResponseStatus(HttpStatus.CREATED)
+public Task create(@Valid @RequestBody Task task) {
+    return taskService.create(task);
+}
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Task create(@Valid @RequestBody Task task) {
-        return taskService.create(task);
-    }
+
 
     @PutMapping("/{id}")
     public Task update(@PathVariable String id, @Valid @RequestBody Task task) {
