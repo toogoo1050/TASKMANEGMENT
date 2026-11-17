@@ -35,6 +35,8 @@ public class TaskService {
         task.setCategory(updated.getCategory());
         task.setMemo(updated.getMemo());
         task.setDisplayOrder(updated.getDisplayOrder());
+        task.setPriority(updated.getPriority());
+        task.setDueDate(updated.getDueDate());
         return task;
     }
 
