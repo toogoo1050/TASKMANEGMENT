@@ -17,6 +17,7 @@ import Board from './components/Board';
 import AddTaskForm from './components/AddTaskForm';
 import TaskCard from './components/TaskCard';
 import TaskEditModal from './components/TaskEditModal';
+import DeleteConfirmModal from './components/DeleteConfirmModal';
 
 const STATUSES: TaskStatus[] = ['todo', 'doing', 'done'];
 
@@ -25,6 +26,7 @@ export default function App() {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
   useEffect(() => {
     getTasks().then(setTasks).catch(console.error);
@@ -45,6 +47,14 @@ export default function App() {
   const handleDelete = async (id: string) => {
     await deleteTask(id);
     setTasks((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const handleDeleteRequest = (task: Task) => setTaskToDelete(task);
+
+  const handleDeleteConfirm = async () => {
+    if (!taskToDelete) return;
+    await handleDelete(taskToDelete.id);
+    setTaskToDelete(null);
   };
 
   const handleEdit = (task: Task) => {
@@ -155,14 +165,21 @@ export default function App() {
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
-          <Board tasks={tasks} onDelete={handleDelete} onEdit={handleEdit} />
+          <Board tasks={tasks} onDeleteRequest={handleDeleteRequest} onEdit={handleEdit} />
           <DragOverlay>
-            {activeTask && <TaskCard task={activeTask} onDelete={() => undefined} onEdit={() => undefined} />}
+            {activeTask && <TaskCard task={activeTask} onDeleteRequest={() => undefined} onEdit={() => undefined} />}
           </DragOverlay>
         </DndContext>
       </main>
       {isModalOpen && selectedTask && (
         <TaskEditModal task={selectedTask} onSave={handleUpdate} onClose={handleModalClose} />
+      )}
+      {taskToDelete && (
+        <DeleteConfirmModal
+          taskTitle={taskToDelete.title}
+          onConfirm={handleDeleteConfirm}
+          onClose={() => setTaskToDelete(null)}
+        />
       )}
     </div>
   );

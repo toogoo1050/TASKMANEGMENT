@@ -12,11 +12,11 @@ const COLUMN_LABELS: Record<TaskStatus, string> = {
 interface Props {
   status: TaskStatus;
   tasks: Task[];
-  onDelete: (id: string) => void;
+  onDeleteRequest: (task: Task) => void;
   onEdit: (task: Task) => void;
 }
 
-export default function Column({ status, tasks, onDelete, onEdit }: Props) {
+export default function Column({ status, tasks, onDeleteRequest, onEdit }: Props) {
   const { setNodeRef, isOver } = useDroppable({ id: status });
 
   return (
@@ -31,7 +31,7 @@ export default function Column({ status, tasks, onDelete, onEdit }: Props) {
           strategy={verticalListSortingStrategy}
         >
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} onDelete={onDelete} onEdit={onEdit} />
+            <TaskCard key={task.id} task={task} onDeleteRequest={onDeleteRequest} onEdit={onEdit} />
           ))}
         </SortableContext>
       </div>

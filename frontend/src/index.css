@@ -352,3 +352,18 @@ body {
 .modal-btn-save:hover {
   background: #1d4ed8;
 }
+
+.modal-btn-danger {
+  padding: 8px 16px;
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.modal-btn-danger:hover {
+  background: #b91c1c;
+}
