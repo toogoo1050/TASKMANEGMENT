@@ -6,11 +6,11 @@ const PRIORITY_LABEL: Record<string, string> = { high: '高', medium: '中', low
 
 interface Props {
   task: Task;
-  onDelete: (id: string) => void;
+  onDeleteRequest: (task: Task) => void;
   onEdit: (task: Task) => void;
 }
 
-export default function TaskCard({ task, onDelete, onEdit }: Props) {
+export default function TaskCard({ task, onDeleteRequest, onEdit }: Props) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: task.id });
 
@@ -42,7 +42,7 @@ export default function TaskCard({ task, onDelete, onEdit }: Props) {
           </button>
           <button
             className="task-card-delete"
-            onClick={(e) => { e.stopPropagation(); onDelete(task.id); }}
+            onClick={(e) => { e.stopPropagation(); onDeleteRequest(task); }}
             onPointerDown={(e) => e.stopPropagation()}
           >
             ×

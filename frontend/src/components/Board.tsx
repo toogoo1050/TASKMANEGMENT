@@ -5,11 +5,11 @@ const STATUSES: TaskStatus[] = ['todo', 'doing', 'done'];
 
 interface Props {
   tasks: Task[];
-  onDelete: (id: string) => void;
+  onDeleteRequest: (task: Task) => void;
   onEdit: (task: Task) => void;
 }
 
-export default function Board({ tasks, onDelete, onEdit }: Props) {
+export default function Board({ tasks, onDeleteRequest, onEdit }: Props) {
   return (
     <div className="board">
       {STATUSES.map((status) => (
@@ -17,7 +17,7 @@ export default function Board({ tasks, onDelete, onEdit }: Props) {
           key={status}
           status={status}
           tasks={tasks.filter((t) => t.status === status)}
-          onDelete={onDelete}
+          onDeleteRequest={onDeleteRequest}
           onEdit={onEdit}
         />
       ))}
