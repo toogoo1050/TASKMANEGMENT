@@ -1,4 +1,5 @@
 export type TaskStatus = 'todo' | 'doing' | 'done';
+export type TaskPriority = 'high' | 'medium' | 'low';
 
 export interface Task {
   id: string;
@@ -8,4 +9,6 @@ export interface Task {
   memo: string | null;
   createdAt: string;
   displayOrder: number;
+  priority: TaskPriority | null;
+  dueDate: string | null; // "YYYY-MM-DD"
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -37,6 +38,11 @@ public class Task {
 
     @Column(nullable = false)
     private Integer displayOrder = 0;
+
+    private String priority; // "high" / "medium" / "low" / null
+
+    @Column(name = "due_date")
+    private LocalDate dueDate;
 
     @PrePersist
     private void prePersist() {

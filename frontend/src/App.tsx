@@ -16,12 +16,15 @@ import type { Task, TaskStatus } from './types/task';
 import Board from './components/Board';
 import AddTaskForm from './components/AddTaskForm';
 import TaskCard from './components/TaskCard';
+import TaskEditModal from './components/TaskEditModal';
 
 const STATUSES: TaskStatus[] = ['todo', 'doing', 'done'];
 
 export default function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     getTasks().then(setTasks).catch(console.error);
@@ -42,6 +45,21 @@ export default function App() {
   const handleDelete = async (id: string) => {
     await deleteTask(id);
     setTasks((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const handleEdit = (task: Task) => {
+    setSelectedTask(task);
+    setIsModalOpen(true);
+  };
+
+  const handleUpdate = async (id: string, data: Partial<Task>) => {
+    const updated = await updateTask(id, data);
+    setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedTask(null);
   };
 
   const handleDragStart = ({ active }: DragStartEvent) => {
@@ -116,6 +134,8 @@ export default function App() {
           category: t.category,
           memo: t.memo,
           displayOrder: t.displayOrder,
+          priority: t.priority,
+          dueDate: t.dueDate,
         })
       )
     );
@@ -135,12 +155,15 @@ export default function App() {
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
-          <Board tasks={tasks} onDelete={handleDelete} />
+          <Board tasks={tasks} onDelete={handleDelete} onEdit={handleEdit} />
           <DragOverlay>
-            {activeTask && <TaskCard task={activeTask} onDelete={() => undefined} />}
+            {activeTask && <TaskCard task={activeTask} onDelete={() => undefined} onEdit={() => undefined} />}
           </DragOverlay>
         </DndContext>
       </main>
+      {isModalOpen && selectedTask && (
+        <TaskEditModal task={selectedTask} onSave={handleUpdate} onClose={handleModalClose} />
+      )}
     </div>
   );
 }
