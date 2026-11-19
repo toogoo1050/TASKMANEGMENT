@@ -3,8 +3,10 @@ package com.taskmanagement.service;
 import com.taskmanagement.entity.Task;
 import com.taskmanagement.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -29,7 +31,7 @@ public class TaskService {
     @Transactional
     public Task update(String id, Task updated) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found: " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found: " + id));
         task.setTitle(updated.getTitle());
         task.setStatus(updated.getStatus());
         task.setCategory(updated.getCategory());

@@ -214,6 +214,14 @@ body {
 .task-card-priority--medium { background: #fef9c3; color: #ca8a04; }
 .task-card-priority--low    { background: #dcfce7; color: #16a34a; }
 
+/* Priority + due date row */
+.task-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 /* Due date */
 .task-card-due {
   font-size: 11px;

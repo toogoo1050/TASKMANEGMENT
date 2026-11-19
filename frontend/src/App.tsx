@@ -172,7 +172,7 @@ export default function App() {
         </DndContext>
       </main>
       {isModalOpen && selectedTask && (
-        <TaskEditModal task={selectedTask} onSave={handleUpdate} onClose={handleModalClose} />
+        <TaskEditModal key={selectedTask.id} task={selectedTask} onSave={handleUpdate} onClose={handleModalClose} />
       )}
       {taskToDelete && (
         <DeleteConfirmModal
