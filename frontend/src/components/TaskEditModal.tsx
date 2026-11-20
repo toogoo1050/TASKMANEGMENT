@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Task, TaskPriority, TaskStatus } from '../types/task';
 
 interface Props {
@@ -14,15 +14,6 @@ export default function TaskEditModal({ task, onSave, onClose }: Props) {
   const [dueDate, setDueDate] = useState(task.dueDate ?? '');
   const [category, setCategory] = useState(task.category ?? '');
   const [memo, setMemo] = useState(task.memo ?? '');
-
-  useEffect(() => {
-    setTitle(task.title);
-    setStatus(task.status);
-    setPriority(task.priority ?? '');
-    setDueDate(task.dueDate ?? '');
-    setCategory(task.category ?? '');
-    setMemo(task.memo ?? '');
-  }, [task]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

@@ -4,6 +4,14 @@ import type { Task } from '../types/task';
 
 const PRIORITY_LABEL: Record<string, string> = { high: '高', medium: '中', low: '低' };
 
+function getTodayString(): string {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 interface Props {
   task: Task;
   onDeleteRequest: (task: Task) => void;
@@ -20,7 +28,7 @@ export default function TaskCard({ task, onDeleteRequest, onEdit }: Props) {
     opacity: isDragging ? 0.4 : 1,
   };
 
-  const isOverdue = task.dueDate ? new Date(task.dueDate) < new Date(new Date().toDateString()) : false;
+  const isOverdue = task.dueDate ? task.dueDate < getTodayString() : false;
 
   return (
     <div
@@ -51,7 +59,7 @@ export default function TaskCard({ task, onDeleteRequest, onEdit }: Props) {
       </div>
 
       {(task.priority || task.dueDate) && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+        <div className="task-card-meta">
           {task.priority && (
             <span className={`task-card-priority task-card-priority--${task.priority}`}>
               {PRIORITY_LABEL[task.priority]}

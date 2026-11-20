@@ -1,6 +1,10 @@
 package com.taskmanagement.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,8 +21,10 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Task {
 
+    private static final int UUID_LENGTH = 36;
+
     @Id
-    @Column(length = 36)
+    @Column(length = UUID_LENGTH)
     private String id;
 
     @NotBlank
