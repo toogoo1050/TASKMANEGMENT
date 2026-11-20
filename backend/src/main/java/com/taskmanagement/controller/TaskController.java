@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tasks")
-@CrossOrigin(origins = "${cors.allowed-origins:http://localhost:5173}")
+@CrossOrigin(originPatterns = "*")
 @RequiredArgsConstructor
 public class TaskController {
 
